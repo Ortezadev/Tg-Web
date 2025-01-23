@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoftwareShop</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+            font-size: 16px;
+            position: relative;
+            transition: all 0.3s ease-in-out;
+        }
+        #container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .product, .back-button, .action-button {
+            cursor: pointer;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid #fff;
+            border-radius: 5px;
+            font-size: 18px;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .product:hover, .back-button:hover, .action-button:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        .product-list, .details {
+            display: none;
+        }
+        .details.active, .product-list.active {
+            display: block;
+        }
+        .input-field {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        select, input {
+            width: 80%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #fff;
+            font-size: 16px;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+        .back-button {
+            margin-top: 20px;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .contact-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 18px;
+            text-decoration: none;
+        }
+        .contact-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .description-bg {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            max-width: 90%;
+            margin: auto;
+        }
+        .address-box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            user-select: all;
+            color: #fff;
+            font-weight: bold;
+            display: none;
+            text-shadow: 1px 1px 2px #000;
+            cursor: pointer;
+            overflow-wrap: break-word;
+        }
+        .address-box:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+<div id="container">
+    <h1 id="main-title">SoftwareShop</h1>
+    <div id="product-list" class="product-list active">
+        <div class="product" data-product-id="1">TRX Checker</div>
+        <div class="product" data-product-id="2">TON Checker</div>
+        <div class="product" data-product-id="3">XRP Checker</div>
+        <div class="product" data-product-id="4">All_in_one Checker</div>
+        <div class="product" data-product-id="5">GenCheck Mnemonic</div>
+        <div class="product" data-product-id="6">Seedbrute Force</div>
+    </div>
+
+    <div id="details" class="details">
+        <h2 id="product-name"></h2>
+        <div class="description-bg">
+            <p id="product-description"></p>
+        </div>
+        <h3 id="product-price"></h3>
+        <div class="input-field">
+            <label>Your @username</label>
+            <input type="text" id="username" placeholder="@username">
+        </div>
+        <div class="input-field">
+            <label>Address</label>
+            <select id="crypto-address">
+                <option value="" disabled selected>Select Cryptocurrency</option>
+                <option value="trx">TRX (TRC20)</option>
+                <option value="sol">SOL</option>
+                <option value="ltc">LTC</option>
+                <option value="btc">BTC</option>
+                <option value="bnb">BNB (BEP20)</option>
+                <option value="eth">ETH (ERC20)</option>
+            </select>
+            <div id="address-output" class="address-box" onclick="copyAddress()"></div>
+        </div>
+        <div class="input-field">
+            <label>Transaction Link</label>
+            <input type="text" id="transaction-link" placeholder="Paste transaction link here">
+        </div>
+        <div class="action-button" id="send-payment">Send Payment</div>
+        <div class="action-button" id="download-software">Download Software</div>
+        <div class="back-button" id="back-to-catalog">Back to Catalog</div>
+    </div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<a href="https://t.me/shadowcrypto_main" target="_blank" class="contact-button" id="contact-link">Contact</a>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const products = [
+            { name: "TRX Checker", price: "$30", description: "Check for TRC20 chains and Show balance" },
+            { name: "TON Checker", price: "$30", description: "Check for TON chains and Show balance" },
+            { name: "XRP Checker", price: "$30", description: "Check for XRP chains and Show balance" },
+            { name: "All_in_one Checker", price: "$50", description: "20+ chains for check. Seed+PK works" },
+            { name: "GenCheck Mnemonic", price: "$35", description: "Generator 12/24 Word seed phrases or private keys with functions check balance BTC ETH" },
+            { name: "Seedbrute Force", price: "$60", description: "Popular software for brute lost wallets" }
+        ];
+
+        function selectProduct(productId) {
+            const product = products[productId - 1];
+            document.getElementById("product-list").classList.remove("active");
+            document.getElementById("details").classList.add("active");
+            document.getElementById("product-name").textContent = product.name;
+            document.getElementById("product-price").textContent = `Price: ${product.price}`;
+            document.getElementById("product-description").textContent = product.description;
+            document.getElementById("contact-link").style.display = "none";  // Hide contact link
+        }
+
+        function showAddress() {
+            const addressOutput = document.getElementById("address-output");
+            const selectedCrypto = document.getElementById("crypto-address").value;
+            
+            const addresses = {
+                trx: "TRX (TRC20) Address: TYFbAhAg1ekDz1BW3CDshoHXxbSuwZcdbV",
+                sol: "SOL Address: 7XLyHbB17pV74xo6dNSdDqwHcwvJZZCbSikYmceryQg5",
+                ltc: "LTC Address: ltc1q3w96elqek8de5ezjffm5k8mua04f6rzsmcjpzd",
+                btc: "BTC Address: bc1q5d6pg3df45076pj2azms0p8c7swscv7sj0z33f",
+                bnb: "BNB (BEP20) Address: 0x3AbFB7d3dA9B6AC82079691678f13B2aea915A52",
+                eth: "ETH (ERC20) Address: 0x3AbFB7d3dA9B6AC82079691678f13B2aea915A52"
+            };
+
+            addressOutput.textContent = addresses[selectedCrypto] || "";
+            addressOutput.style.display = selectedCrypto ? "block" : "none";
+        }
+
+        function copyAddress() {
+            const addressOutput = document.getElementById("address-output");
+            const range = document.createRange();
+            range.selectNode(addressOutput);
+            window.getSelection().removeAllRanges(); 
+            window.getSelection().addRange(range);
+            document.execCommand("copy");
+            window.getSelection().removeAllRanges(); 
+            showNotification("Address copied to clipboard!");
+        }
+
+        function goBack() {
+            document.getElementById("details").classList.remove("active");
+            document.getElementById("product-list").classList.add("active");
+            document.getElementById("main-title").textContent = "SoftwareShop";
+            document.getElementById("contact-link").style.display = "block";  // Show contact link
+        }
+
+        function sendPayment() {
+            const transactionLink = document.getElementById("transaction-link").value;
+            if (transactionLink.trim() === "") {
+                showNotification("Payment not detected! Please use the address provided to transfer funds and paste the transaction link below.");
+            } else {
+                showNotification("We are verifying your transaction. Once the deposit is confirmed, click on 'Download Software'.");
+            }
+        }
+
+        function downloadSoftware() {
+            showNotification("Purchase access to software");
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.style.display = "block";
+            setTimeout(() => {
+                notification.style.display = "none";
+            }, 3000);
+        }
+
+        document.querySelectorAll('.product').forEach(item => {
+            item.addEventListener('click', event => {
+                const productId = event.currentTarget.getAttribute('data-product-id');
+                selectProduct(parseInt(productId));
+            });
+        });
+
+        document.getElementById("crypto-address").onchange = showAddress;
+        document.getElementById("send-payment").onclick = sendPayment;
+        document.getElementById("download-software").onclick = downloadSoftware;
+        document.getElementById("back-to-catalog").onclick = goBack;
+    });
+</script>
+
+</body>
+</html>
