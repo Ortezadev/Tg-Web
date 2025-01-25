@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SoftwareShop</title>
+    <title>CryptoShadow | Software Shop</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -27,7 +27,7 @@
             padding: 20px;
             background-color: rgba(255, 255, 255, 0.1);
         }
-        .product, .back-button, .action-button {
+        .action-button, .product, .back-button {
             cursor: pointer;
             margin-bottom: 10px;
             padding: 10px;
@@ -36,16 +36,17 @@
             border-radius: 5px;
             font-size: 18px;
             transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .product:hover, .back-button:hover, .action-button:hover {
+        .action-button:hover, .product:hover, .back-button:hover {
             background-color: rgba(255, 255, 255, 0.4);
             transform: translateY(-2px);
         }
-        .product-list, .details {
+        .hidden {
             display: none;
-        }
-        .details.active, .product-list.active {
-            display: block;
         }
         .input-field {
             margin-bottom: 10px;
@@ -62,9 +63,6 @@
             font-size: 16px;
             text-align: center;
             transition: all 0.3s ease-in-out;
-        }
-        .back-button {
-            margin-top: 20px;
         }
         .notification {
             position: fixed;
@@ -119,22 +117,35 @@
         .address-box:hover {
             background-color: rgba(255, 255, 255, 0.3);
         }
+        .container {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body>
 
-<div id="container">
+<div id="welcome-container" class="container">
+    <div id="container">
+        <h1>Welcome to CryptoShadow</h1>
+        <p>Your one-stop shop for all your cryptocurrency tools.</p>
+        <button class="action-button" id="enter-shop">Shop</button>
+    </div>
+</div>
+
+<div id="shop-container" class="container hidden">
     <h1 id="main-title">SoftwareShop</h1>
-    <div id="product-list" class="product-list active">
+    <div id="product-list" class="product-list" style="box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); border-radius: 10px; padding: 20px; background-color: rgba(255, 255, 255, 0.1);">
         <div class="product" data-product-id="1">TRX Checker</div>
         <div class="product" data-product-id="2">TON Checker</div>
-        <div class="product" data-product-id="3">XRP Checker</div>
         <div class="product" data-product-id="4">All_in_one Checker</div>
         <div class="product" data-product-id="5">GenCheck Mnemonic</div>
         <div class="product" data-product-id="6">Seedbrute Force</div>
     </div>
 
-    <div id="details" class="details">
+    <div id="details" class="details hidden" style="box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); border-radius: 10px; padding: 20px; background-color: rgba(255, 255, 255, 0.1);">
         <h2 id="product-name"></h2>
         <div class="description-bg">
             <p id="product-description"></p>
@@ -148,12 +159,12 @@
             <label>Address</label>
             <select id="crypto-address">
                 <option value="" disabled selected>Select Cryptocurrency</option>
-                <option value="trx">TRX (TRC20)</option>
+                <option value="btc">BTC</option>
+                <option value="eth">ETH</option>
+                <option value="bnb">BNB</option>
                 <option value="sol">SOL</option>
                 <option value="ltc">LTC</option>
-                <option value="btc">BTC</option>
-                <option value="bnb">BNB (BEP20)</option>
-                <option value="eth">ETH (ERC20)</option>
+                <option value="trx">TRX</option>
             </select>
             <div id="address-output" class="address-box" onclick="copyAddress()"></div>
         </div>
@@ -174,18 +185,22 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const products = [
-            { name: "TRX Checker", price: "$30", description: "Check for TRC20 chains and Show balance" },
-            { name: "TON Checker", price: "$30", description: "Check for TON chains and Show balance" },
-            { name: "XRP Checker", price: "$30", description: "Check for XRP chains and Show balance" },
-            { name: "All_in_one Checker", price: "$50", description: "20+ chains for check. Seed+PK works" },
-            { name: "GenCheck Mnemonic", price: "$35", description: "Generator 12/24 Word seed phrases or private keys with functions check balance BTC ETH" },
-            { name: "Seedbrute Force", price: "$60", description: "Popular software for brute lost wallets" }
+            { name: "TRX Checker", price: "$30", description: "Good software for check your seed phrases / private keys for balance in TRX chain" },
+            { name: "TON Checker", price: "$30", description: "Good software for check your seed phrases / private keys for balance in TON chain" },
+            { name: "All In One Checker", price: "$50", description: "Checker for seed phrases / private keys. Check 20+ chains + Sorter" },
+            { name: "GenCheck Mnemonic", price: "$35", description: "Generator 12/24 Word seed phrases or private keys with functions show balance" },
+            { name: "SeedCleaner", price: "$60", description: "Unique software for withdraw balance from seed phrases to your wallet" }
         ];
+
+        document.getElementById("enter-shop").onclick = function() {
+            document.getElementById("welcome-container").classList.add("hidden");
+            document.getElementById("shop-container").classList.remove("hidden");
+        };
 
         function selectProduct(productId) {
             const product = products[productId - 1];
-            document.getElementById("product-list").classList.remove("active");
-            document.getElementById("details").classList.add("active");
+            document.getElementById("product-list").classList.add("hidden");
+            document.getElementById("details").classList.remove("hidden");
             document.getElementById("product-name").textContent = product.name;
             document.getElementById("product-price").textContent = `Price: ${product.price}`;
             document.getElementById("product-description").textContent = product.description;
@@ -197,12 +212,12 @@
             const selectedCrypto = document.getElementById("crypto-address").value;
             
             const addresses = {
-                trx: "TRX (TRC20) Address: TYFbAhAg1ekDz1BW3CDshoHXxbSuwZcdbV",
-                sol: "SOL Address: 7XLyHbB17pV74xo6dNSdDqwHcwvJZZCbSikYmceryQg5",
-                ltc: "LTC Address: ltc1q3w96elqek8de5ezjffm5k8mua04f6rzsmcjpzd",
-                btc: "BTC Address: bc1q5d6pg3df45076pj2azms0p8c7swscv7sj0z33f",
-                bnb: "BNB (BEP20) Address: 0x3AbFB7d3dA9B6AC82079691678f13B2aea915A52",
-                eth: "ETH (ERC20) Address: 0x3AbFB7d3dA9B6AC82079691678f13B2aea915A52"
+                trx: "TYFbAhAg1ekDz1BW3CDshoHXxbSuwZcdbV",
+                sol: "7XLyHbB17pV74xo6dNSdDqwHcwvJZZCbSikYmceryQg5",
+                ltc: "ltc1q3w96elqek8de5ezjffm5k8mua04f6rzsmcjpzd",
+                btc: "bc1q5d6pg3df45076pj2azms0p8c7swscv7sj0z33f",
+                bnb: "0x3AbFB7d3dA9B6AC82079691678f13B2aea915A52",
+                eth: "0x3AbFB7d3dA9B6AC82079691678f13B2aea915A52"
             };
 
             addressOutput.textContent = addresses[selectedCrypto] || "";
@@ -221,8 +236,8 @@
         }
 
         function goBack() {
-            document.getElementById("details").classList.remove("active");
-            document.getElementById("product-list").classList.add("active");
+            document.getElementById("details").classList.add("hidden");
+            document.getElementById("product-list").classList.remove("hidden");
             document.getElementById("main-title").textContent = "SoftwareShop";
             document.getElementById("contact-link").style.display = "block";  // Show contact link
         }
